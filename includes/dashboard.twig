@@ -1,0 +1,10 @@
+{% block dashboard_content %}
+
+    {% embed "message.twig" with messages %}{% endembed %}
+
+    <div id="en_dashboard_div" class="wrap">
+        <h2>{{ __( 'EN Dashboard', 'planet4-engagingnetworks' ) }}</h2>
+    </div>
+    <div class="clear"></div>
+
+{% endblock %}

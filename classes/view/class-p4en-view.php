@@ -21,7 +21,7 @@ if ( ! class_exists( 'P4EN_View' ) ) {
 		public function __construct() {}
 
 		/**
-		 * Uses the appropriate templating engine to render a template file.
+		 * Compile and return a template file.
 		 *
 		 * @param array|string $template_name The file name of the template to render.
 		 * @param array        $data The data to pass to the template.
@@ -32,28 +32,6 @@ if ( ! class_exists( 'P4EN_View' ) ) {
 		private function get_template( $template_name, $data, $sub_dir = '' ) {
 			Timber::$locations = $this->template_dir;
 			return Timber::compile( [ $sub_dir . $template_name . '.twig' ], $data );
-		}
-
-		/**
-		 * Render the main page of the plugin.
-		 *
-		 * @param array $data All the data needed to render the template.
-		 *
-		 * @return bool|string The returned output
-		 */
-		public function get_pages( $data ) : string {
-			return $this->get_template( __FUNCTION__, $data );
-		}
-
-		/**
-		 * Render the settings page of the plugin.
-		 *
-		 * @param array $data All the data needed to render the template.
-		 *
-		 * @return bool|string The returned output
-		 */
-		public function get_settings( $data ) {
-			return $this->get_template( __FUNCTION__, $data );
 		}
 
 		/**
@@ -69,16 +47,16 @@ if ( ! class_exists( 'P4EN_View' ) ) {
 		}
 
 		/**
-		 * Render the main page of the plugin.
+		 * Render the dashboard page of the plugin.
 		 *
 		 * @param array $data All the data needed to render the template.
 		 */
-		public function pages( $data ) {
+		public function dashboard( $data ) {
 			$this->view_template( __FUNCTION__, $data );
 		}
 
 		/**
-		 * Render the main page of the plugin.
+		 * Render the pages datatable.
 		 *
 		 * @param array $data All the data needed to render the template.
 		 */
@@ -102,6 +80,16 @@ if ( ! class_exists( 'P4EN_View' ) ) {
 		 */
 		public function message( $data ) {
 			$this->view_template( __FUNCTION__, $data );
+		}
+
+		/**
+		 *
+		 *
+		 * @param string $column
+		 * @param string $data
+		 */
+		public function column_data( $column, $data ) {
+			echo esc_html( $data );
 		}
 	}
 }
