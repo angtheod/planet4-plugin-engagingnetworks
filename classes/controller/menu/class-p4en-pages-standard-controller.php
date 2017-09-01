@@ -18,7 +18,7 @@ if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
 			parent::load();
 			add_action( 'admin_init', array( $this, 'add_enpage_post_type' ) );
 			add_filter( 'manage_edit-p4en_page_columns', array( $this, 'prepare_columns' ) );
-			add_action( 'manage_posts_custom_column' , array( $this, 'prepare_columns_data' ), 10, 2 );
+			add_action( 'manage_posts_custom_column' , array( $this, 'filter_columns_data' ), 10, 2 );
 
 		}
 
@@ -156,6 +156,7 @@ if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
 											'name'           => $page['name'],
 											'createdOn'      => $page['createdOn'],
 											'modifiedOn'     => $page['modifiedOn'],
+											'campaignBaseUrl'=> $page['campaignBaseUrl'],
 											'campaignStatus' => $page['campaignStatus'],
 											'title'          => $page['title'],
 											'subType'        => $page['subType'],
@@ -203,7 +204,7 @@ if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
 				'createdOn'      => __( 'Created', 'planet4-engagingnetworks' ),
 				'modifiedOn'     => __( 'Modified', 'planet4-engagingnetworks' ),
 				'campaignStatus' => __( 'Status', 'planet4-engagingnetworks' ),
-				'title'          => __( 'Title', 'planet4-engagingnetworks' ),
+				'en_title'       => __( 'Title', 'planet4-engagingnetworks' ),
 				'subType'        => __( 'Subtype', 'planet4-engagingnetworks' ),
 				'actions'        => __( 'Actions', 'planet4-engagingnetworks' ),
 			];
@@ -215,14 +216,44 @@ if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
 		 * @param $column
 		 * @param $post_id
 		 */
-		public function prepare_columns_data( $column, $post_id ) {
+		public function filter_columns_data( $column, $post_id ) {
 			$post_meta = json_decode( get_post_meta( $post_id, 'p4en_page_meta' )[0], true );
+
+			$post_meta['campaignStatus'] = ucfirst( $post_meta['campaignStatus'] );
+			if ( ! $post_meta['subType'] ) {
+				$post_meta['subType'] = strtoupper( $post_meta['type'] );
+			}
+			if( 'en_title' === $column ) {
+				$post_meta[ $column ] = $post_meta['title'];
+			}
+
+			switch ( $post_meta['type'] ) {
+				case 'dc':
+					switch ( $post_meta['subType'] ) {
+						case 'DCF':
+							$post_meta['name'] = '<a href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/data/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
+							break;
+						case 'PET':
+							$post_meta['name'] = '<a href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/petition/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
+							break;
+						default:
+							$post_meta['name'] = '<a href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/petition/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
+					}
+					break;
+				case 'nd':
+					$post_meta['name'] = '<a href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/donation/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
+					break;
+			}
+
+			$post_meta['type'] = P4EN_Pages_Controller::SUBTYPES[ $post_meta['subType'] ]['type'];
+			$post_meta['subType'] = P4EN_Pages_Controller::SUBTYPES[ $post_meta['subType'] ]['subType'];
 
 			if ( 'createdOn' === $column || 'modifiedOn' === $column ) {
 				if ( $post_meta[ $column ] ) {
 					$post_meta[ $column ] = date( 'M d, Y', $post_meta[ $column ] / 1000 );
 				}
 			}
+
 			$this->view->column_data( $column, $post_meta[ $column ] );
 		}
 

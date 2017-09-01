@@ -89,7 +89,7 @@ if ( ! class_exists( 'P4EN_View' ) ) {
 		 * @param string $data
 		 */
 		public function column_data( $column, $data ) {
-			echo esc_html( $data );
+			echo $data;
 		}
 	}
 }
