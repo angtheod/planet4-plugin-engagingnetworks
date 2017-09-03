@@ -18,4 +18,10 @@ jQuery(document).ready(function() {
         document.execCommand("copy");
         $temp.remove();
     });
+
+    $('[name="p4en_pages_posts_sync_button"]').off('click').on('click', function ( event ) {
+        event.preventDefault();
+
+        // TODO - Ajax call
+    });
 } );

@@ -14,7 +14,7 @@ if ( ! class_exists( 'P4EN_Settings_Controller' ) ) {
 		 */
 		public function load() {
 			parent::load();
-			add_filter( 'locale', array( $this, 'set_locale' ), 11, 1 );
+			add_filter( 'locale', array( $this, 'set_locale' ), 11, 0 );
 		}
 
 		/**

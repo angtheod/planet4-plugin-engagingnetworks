@@ -10,7 +10,7 @@ return array(
     'P4EN\\Controllers\\Menu\\P4EN_Dashboard_Controller' => $baseDir . '/classes/controller/menu/class-p4en-dashboard-controller.php',
     'P4EN\\Controllers\\Menu\\P4EN_Pages_Controller' => $baseDir . '/classes/controller/menu/class-p4en-pages-controller.php',
     'P4EN\\Controllers\\Menu\\P4EN_Pages_Datatable_Controller' => $baseDir . '/classes/controller/menu/class-p4en-pages-datatable-controller.php',
-    'P4EN\\Controllers\\Menu\\P4EN_Pages_Standard_Controller' => $baseDir . '/classes/controller/menu/class-p4en-pages-standard-controller.php',
+    'P4EN\\Controllers\\Menu\\P4EN_Pages_Posts_Controller' => $baseDir . '/classes/controller/menu/class-p4en-pages-posts-controller.php',
     'P4EN\\Controllers\\Menu\\P4EN_Settings_Controller' => $baseDir . '/classes/controller/menu/class-p4en-settings-controller.php',
     'P4EN\\Controllers\\P4EN_Ensapi_Controller' => $baseDir . '/classes/controller/class-p4en-ensapi-controller.php',
     'P4EN\\Controllers\\P4EN_Uninstall_Controller' => $baseDir . '/classes/controller/class-p4en-uninstall-controller.php',

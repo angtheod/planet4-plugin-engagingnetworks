@@ -135,3 +135,6 @@ msgstr "Επίλεξε Υποκατηγορία"
 
 msgid "Select Status"
 msgstr "Επίλεξε Κατάσταση"
+
+msgid "Sync"
+msgstr "Συγχρονισμός"

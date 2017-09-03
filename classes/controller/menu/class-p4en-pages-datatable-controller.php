@@ -43,7 +43,7 @@ if ( ! class_exists( 'P4EN_Pages_Datatable_Controller' ) ) {
 			$validated = $this->handle_submit( $current_user, $data );
 
 			if ( $validated ) {
-				$pages_settings = get_user_meta( $current_user->ID, 'p4en_pages_datatable_settings', true );
+				$pages_settings = get_user_meta( $current_user->ID, 'p4en_pages_settings', true );
 				if ( isset( $pages_settings['p4en_pages_subtype'] ) && $pages_settings['p4en_pages_subtype'] ) {
 					$params['type'] = $pages_settings['p4en_pages_subtype'];
 
@@ -138,14 +138,14 @@ if ( ! class_exists( 'P4EN_Pages_Datatable_Controller' ) ) {
 					$this->error( __( 'Nonce verification failed!', 'planet4-engagingnetworks' ) );
 					return false;
 				} else {
-					$pages_datatable_settings = $_POST['p4en_pages_datatable_settings'];
+					$pages_datatable_settings = $_POST['p4en_pages_settings'];
 
 					$pages_datatable_settings = $this->valitize( $pages_datatable_settings );
 					if ( false === $pages_datatable_settings ) {
 						return false;
 					}
 
-					update_user_meta( $current_user->ID, 'p4en_pages_datatable_settings', $pages_datatable_settings );
+					update_user_meta( $current_user->ID, 'p4en_pages_settings', $pages_datatable_settings );
 
 					$this->success( __( 'Changes saved!', 'planet4-engagingnetworks' ) );
 				}

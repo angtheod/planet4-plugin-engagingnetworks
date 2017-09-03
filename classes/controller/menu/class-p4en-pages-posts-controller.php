@@ -4,12 +4,12 @@ namespace P4EN\Controllers\Menu;
 
 use P4EN\Controllers\P4EN_Ensapi_Controller;
 
-if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
+if ( ! class_exists( 'P4EN_Pages_Posts_Controller' ) ) {
 
 	/**
-	 * Class P4EN_Pages_Standard_Controller
+	 * Class P4EN_Pages_Posts_Controller
 	 */
-	class P4EN_Pages_Standard_Controller extends P4EN_Pages_Controller {
+	class P4EN_Pages_Posts_Controller extends P4EN_Pages_Controller {
 
 		/**
 		 * Hooks the method that Creates the menu item for the current controller.
@@ -18,8 +18,10 @@ if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
 			parent::load();
 			add_action( 'admin_init', array( $this, 'add_enpage_post_type' ) );
 			add_filter( 'manage_edit-p4en_page_columns', array( $this, 'prepare_columns' ) );
-			add_action( 'manage_posts_custom_column' , array( $this, 'filter_columns_data' ), 10, 2 );
-
+			add_filter( 'manage_edit-p4en_page_sortable_columns', array( $this, 'sortable_columns' ) );
+			add_action( 'manage_posts_custom_column' , array( $this, 'filter_columns_data' ), 11, 2 );
+			add_action( 'restrict_manage_posts', array( $this, 'add_filters' ), 11 );
+			add_action( 'manage_posts_extra_tablenav', array( $this, 'add_sync' ), 11 );
 		}
 
 		/**
@@ -89,6 +91,46 @@ if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
 		}
 
 		/**
+		 *
+		 */
+		public function add_filters() {
+			if ( isset($_GET['post_type'] )) {
+				if ( 'p4en_page' === $_GET['post_type'] ) {
+					$current_user = wp_get_current_user();
+					$pages_settings = get_user_meta( $current_user->ID, 'p4en_pages_settings', true );
+
+					if ( isset( $pages_settings['p4en_pages_subtype'] ) && $pages_settings['p4en_pages_subtype'] ) {
+						$params['type'] = $pages_settings['p4en_pages_subtype'];
+
+						if ( isset( $pages_settings['p4en_pages_status'] ) && 'all' !== $pages_settings['p4en_pages_status'] ) {
+							$params['status'] = $pages_settings['p4en_pages_status'];
+						}
+					}
+
+					$data = [
+						'pages_settings' => $pages_settings,
+						'subtypes'       => self::SUBTYPES,
+						'statuses'       => self::STATUSES,
+						'domain'         => 'planet4-engagingnetworks',
+					];
+
+					$this->view->pages_filters( $data );
+				}
+			}
+		}
+
+		/**
+		 *
+		 */
+		public function add_sync() {
+			if (isset($_GET['post_type'])) {
+				if ( 'p4en_page' == $_GET['post_type'] ) {
+					submit_button( __( 'Sync', 'planet4-engagingnetworks' ), 'primary', 'p4en_pages_posts_sync_button' );
+				}
+			}
+		}
+
+		/**
 		 * Pass all needed data to the view object for the datatable page.
 		 */
 		public function prepare_pages() {
@@ -99,7 +141,7 @@ if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
 
 			$current_user = wp_get_current_user();
 
-			$pages_settings = get_user_meta( $current_user->ID, 'p4en_pages_datatable_settings', true );
+			$pages_settings = get_user_meta( $current_user->ID, 'p4en_pages_settings', true );
 			if ( isset( $pages_settings['p4en_pages_subtype'] ) && $pages_settings['p4en_pages_subtype'] ) {
 				$params['type'] = $pages_settings['p4en_pages_subtype'];
 
@@ -213,6 +255,27 @@ if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
 		/**
 		 *
 		 *
+		 * @param $columns
+		 *
+		 * @return mixed
+		 */
+		public function sortable_columns( $columns ) {
+			$columns['id']             = 'id';
+			$columns['type']           = 'type';
+			$columns['name']           = 'name';
+			$columns['createdOn']      = 'createdOn';
+			$columns['modifiedOn']     = 'modifiedOn';
+			$columns['campaignStatus'] = 'campaignStatus';
+			$columns['en_title']       = 'en_title';
+			$columns['subType']        = 'subType';
+			$columns['actions']        = 'actions';
+
+			return $columns;
+		}
+
+		/**
+		 *
+		 *
 		 * @param $column
 		 * @param $post_id
 		 */
@@ -231,17 +294,17 @@ if ( ! class_exists( 'P4EN_Pages_Standard_Controller' ) ) {
 				case 'dc':
 					switch ( $post_meta['subType'] ) {
 						case 'DCF':
-							$post_meta['name'] = '<a href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/data/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
+							$post_meta['name'] = '<a class="p4en_link" href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/data/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
 							break;
 						case 'PET':
-							$post_meta['name'] = '<a href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/petition/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
+							$post_meta['name'] = '<a class="p4en_link" href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/petition/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
 							break;
 						default:
-							$post_meta['name'] = '<a href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/petition/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
+							$post_meta['name'] = '<a class="p4en_link" href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/petition/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
 					}
 					break;
 				case 'nd':
-					$post_meta['name'] = '<a href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/donation/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
+					$post_meta['name'] = '<a class="p4en_link" href="' . esc_url( $post_meta['campaignBaseUrl'] . '/page/' . $post_meta['id'] . '/donation/1' ) . '" title="" data-title="Open page in new tab" target="_blank">' . esc_html( $post_meta['name'] ) . '</a>';
 					break;
 			}
 

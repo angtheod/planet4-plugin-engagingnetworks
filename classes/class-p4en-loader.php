@@ -145,7 +145,8 @@ if ( ! class_exists( 'P4EN_Loader' ) ) {
 		 */
 		public function load_admin_assets( $hook ) {
 			// Load the assets only on the plugin's pages.
-			if ( strpos( $hook, P4EN_PLUGIN_SLUG_NAME ) === false ) {
+			global $current_screen;
+			if ( strpos( $hook, P4EN_PLUGIN_SLUG_NAME ) === false && 'p4en_page' !== $current_screen->post_type ) {
 				return;
 			}
 

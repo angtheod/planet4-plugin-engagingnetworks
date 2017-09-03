@@ -56,6 +56,15 @@ if ( ! class_exists( 'P4EN_View' ) ) {
 		}
 
 		/**
+		 * Render the pages filters.
+		 *
+		 * @param array $data All the data needed to render the template.
+		 */
+		public function pages_filters( $data ) {
+			$this->view_template( __FUNCTION__, $data );
+		}
+
+		/**
 		 * Render the pages datatable.
 		 *
 		 * @param array $data All the data needed to render the template.

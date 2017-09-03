@@ -11,27 +11,7 @@
             <input type="hidden" name="form_submit" value="{{ form_submit }}">
 
             <div id="p4en_pages_datatable_filters">
-                <select id="p4en_pages_subtype" name="p4en_pages_datatable_settings[p4en_pages_subtype]">
-                    <option selected disabled>- {{ __( 'Select Subtype', domain ) }} -</option>
-                    {% for key, subtype in subtypes %}
-                        {% if key == pages_settings.p4en_pages_subtype %}
-                            <option value="{{ key|e('html_attr') }}" selected>{{ subtype['subType']|e('html') }}</option>
-                        {% else %}
-                            <option value="{{ key|e('html_attr') }}">{{ subtype['subType']|e('html') }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-
-                <select id="p4en_pages_status" name="p4en_pages_datatable_settings[p4en_pages_status]">
-                    <option selected disabled>- {{ __( 'Select Status', domain ) }} -</option>
-                    {% for key, status in statuses %}
-                        {% if key == pages_settings.p4en_pages_status %}
-                            <option value="{{ key|e('html_attr') }}" selected>{{ status|e('html') }}</option>
-                        {% else %}
-                            <option value="{{ key|e('html_attr') }}">{{ status|e('html') }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
+                {% embed "pages_filters.twig" with messages %}{% endembed %}
                 {{ fn( 'submit_button', __( 'Save Changes', domain ), 'primary', 'p4en_pages_datatable_settings_save_button' ) }}
             </div>
         </form>
